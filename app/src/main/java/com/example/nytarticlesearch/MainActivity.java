@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
                     final String responseData = response.body().string();
-                    Toast.makeText(getBaseContext(), "Connection successful", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getBaseContext(), "Connection successful", Toast.LENGTH_LONG).show();
                     System.out.println(response.toString());
                 }
             }
