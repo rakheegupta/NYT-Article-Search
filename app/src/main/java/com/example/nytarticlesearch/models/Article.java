@@ -85,7 +85,11 @@ public class Article {
         mWebUrl=jsonArticle.getString("web_url");
         mSnippet=jsonArticle.getString("snippet");
         mLeadParagraph=jsonArticle.getString("lead_paragraph");
-        mHeadline=jsonArticle.getJSONObject("headline").getString("print_headline");
+        String printHeadline =jsonArticle.getJSONObject("headline").getString("print_headline");
+        if (printHeadline == null || printHeadline.isEmpty() || printHeadline.equals("null"))
+            mHeadline=jsonArticle.getJSONObject("headline").getString("main");
+        else
+            mHeadline=printHeadline;
         mOriginalByLine=jsonArticle.getJSONObject("byline").getString("original");
         JSONArray articleMultimedia = jsonArticle.getJSONArray("multimedia");
         if (articleMultimedia.length()>0) {
@@ -103,6 +107,7 @@ public class Article {
                 System.out.println(listArticles.get(i).toString());
                 Article article=new Article((JSONObject)listArticles.get(i));
                 alArticles.add(article);
+                System.out.println(article.getmAbstract());
             }
         } catch(JSONException e){
             e.printStackTrace();

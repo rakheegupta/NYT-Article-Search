@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="header_font_size">20dp</dimen>
+    <dimen name="text_font_size">16dp</dimen>
+    <dimen name="image_width">200dp</dimen>
+    <dimen name="image_height">200dp</dimen>
+    <dimen name="big_image_width">230dp</dimen>
+    <dimen name="big_image_height">230dp</dimen>
+</resources>
