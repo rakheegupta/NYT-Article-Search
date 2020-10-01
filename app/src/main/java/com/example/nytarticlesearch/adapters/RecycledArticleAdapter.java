@@ -49,13 +49,13 @@ public class RecycledArticleAdapter extends RecyclerView.Adapter<ArticleViewHold
         //clear previous article image
         holder.mIvArticle.setImageResource(0);
         String imageUri=article.getmImageUrl();
-        holder.mTvTitle.setText(article.getmHeadline());
-        holder.mTvOverview.setText(article.getmAbstract());
         GlideApp.with(holder.mIvArticle.getContext())
-                .load(imageUri)
-                .override((int) mContext.getResources().getDimension(R.dimen.image_width), (int) mContext.getResources().getDimension(R.dimen.image_height))
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .transform(new RoundedCornersTransformation(30, 10))
-                .into(holder.mIvArticle);
+            .load(imageUri)
+            .override((int) mContext.getResources().getDimension(R.dimen.image_width), (int) mContext.getResources().getDimension(R.dimen.image_height))
+            .placeholder(R.drawable.ic_launcher_foreground)
+            .transform(new RoundedCornersTransformation(30, 10))
+            .into(holder.mIvArticle);
+    holder.mTvTitle.setText(article.getmHeadline());
+        holder.mTvOverview.setText(article.getmAbstract());
     }
 }

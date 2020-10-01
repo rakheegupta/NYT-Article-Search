@@ -2,6 +2,10 @@ package com.example.nytarticlesearch;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import androidx.appcompat.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,20 +35,29 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<Article> mAlArticles;
     Handler mHandler;
+    RecycledArticleAdapter mRecycledArticleListAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAlArticles = new ArrayList<>();
 
-        final RecycledArticleAdapter recycledArticleListAdapter = new RecycledArticleAdapter(this, mAlArticles);
+        mRecycledArticleListAdapter = new RecycledArticleAdapter(this, mAlArticles);
         RecyclerView rvItems = (RecyclerView) findViewById(R.id.rlvArticles);
-        rvItems.setAdapter(recycledArticleListAdapter);
+        rvItems.setAdapter(mRecycledArticleListAdapter);
         rvItems.setLayoutManager( new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 
+        searchNYT("business");
+
+    }
+
+    public void searchNYT(String query)
+    {
         OkHttpClient client = new OkHttpClient();
+        String url = String.format("https://api.nytimes.com/svc/search/v2/articlesearch.json?q=%s&api-key=N9I7wpmmT8BPcPrnMhnohhn0KDkJjFQD",query);
         Request request = new Request.Builder()
-                .url("https://api.nytimes.com/svc/search/v2/articlesearch.json?q=business&api-key=N9I7wpmmT8BPcPrnMhnohhn0KDkJjFQD")
+                .url(url)
                 //http://publicobject.com/helloworld.txt")
                 .build();
 
@@ -64,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // cannot use network on main ui thread NetworkOnMainThreadException
                     final String responseData = response.body().string();
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -73,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                                 mAlArticles.addAll(Article.extractFromJsonResponse(jsonResponseData.getJSONObject("response").getJSONArray("docs")));
                                 System.out.println(mAlArticles.size());
                                 System.out.println(mAlArticles.toString());
-                                recycledArticleListAdapter.notifyDataSetChanged();
+                                mRecycledArticleListAdapter.notifyDataSetChanged();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -82,6 +96,29 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.search_menu,menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView =(SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener(){
+            @Override
+            public boolean onQueryTextSubmit(String query){
+                mAlArticles.clear();
+                searchNYT(query);
+                searchView.clearFocus();
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
 }

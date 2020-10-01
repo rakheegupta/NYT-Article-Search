@@ -49,7 +49,10 @@ public class Article {
     }
 
     public String getmImageUrl() {
-        return "https://static01.nyt.com/"+mImageUrl;
+        if (mImageUrl == null || mImageUrl.isEmpty() || mImageUrl.equals("null"))
+            return null;
+        else
+            return "https://static01.nyt.com/"+mImageUrl;
     }
 
     public void setmImageUrl(String mImageUrl) {
