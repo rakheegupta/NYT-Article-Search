@@ -1,5 +1,6 @@
 package com.example.nytarticlesearch;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -8,7 +9,6 @@ import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -34,6 +34,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE = 0;
     ArrayList<Article> mAlArticles;
     Handler mHandler;
     RecycledArticleAdapter mRecycledArticleListAdapter;
@@ -123,11 +124,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void filterResults(MenuItem item) {
-        FragmentManager fm= getSupportFragmentManager();
-        FilterOptionsFragment filterOptions = FilterOptionsFragment.newInstance("filter options");
-        filterOptions.show(fm,"filter options");
+        startActivityForResult (new Intent(this, FilterOptionsActivity.class),REQUEST_CODE);
     }
 
+    protected void onActivityResult (int requestCode,
+                                     int resultCode,
+                                     Intent data) {
+        if(resultCode==RESULT_OK && requestCode ==REQUEST_CODE){
+            String name = data.getExtras().getString("start_date");
+            System.out.println("Result from filter options"+name);
+//            Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
 }
 
 /*handler

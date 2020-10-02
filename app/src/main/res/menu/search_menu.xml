@@ -12,7 +12,6 @@
         android:title="filter"
         android:icon="@android:drawable/arrow_down_float"
         app:showAsAction="ifRoom|collapseActionView"
-        app:actionViewClass="android.widget.Button"
         android:onClick="filterResults"/>
 
 </menu>
