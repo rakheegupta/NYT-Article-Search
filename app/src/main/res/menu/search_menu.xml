@@ -7,4 +7,12 @@
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"/>
+    <item android:id="@+id/filter_search"
+        android:orderInCategory="10"
+        android:title="filter"
+        android:icon="@android:drawable/arrow_down_float"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.widget.Button"
+        android:onClick="filterResults"/>
+
 </menu>

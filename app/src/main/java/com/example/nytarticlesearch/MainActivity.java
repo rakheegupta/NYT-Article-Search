@@ -5,9 +5,10 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import androidx.appcompat.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -119,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
 
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public void filterResults(MenuItem item) {
+        FragmentManager fm= getSupportFragmentManager();
+        FilterOptionsFragment filterOptions = FilterOptionsFragment.newInstance("filter options");
+        filterOptions.show(fm,"filter options");
     }
 
 }
