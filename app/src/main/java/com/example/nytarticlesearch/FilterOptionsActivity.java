@@ -1,8 +1,10 @@
 package com.example.nytarticlesearch;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,6 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +30,7 @@ public class FilterOptionsActivity extends AppCompatActivity {
     boolean mArtsFilter;
     boolean mSportsFilter;
     boolean mFashionFilter;
+    String mSortOrderSelected;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,8 @@ public class FilterOptionsActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long l) {
                 System.out.println("spinner selected item "+parent.getItemAtPosition(pos));
+                mSortOrderSelected=parent.getItemAtPosition(pos).toString();
+                System.out.println("sort order selected at listener"+mSortOrderSelected);
             }
 
             @Override
@@ -73,17 +79,60 @@ public class FilterOptionsActivity extends AppCompatActivity {
         // Apply the adapter to the spinner
         mSortOrder.setAdapter(adapter);
         mSaveButton= (Button) findViewById(R.id.btSave);
+
+        //load user settings
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        mEtDatePicker.setText(sharedPreferences.getString("begin-date", "11/11/2011"));
+       // mSortOrder.setPrompt(sharedPreferences.getString("sort-order","Newest"));
+        mCbArts.setChecked(sharedPreferences.getBoolean("news-desk-arts",false));
+        mCbFashion.setChecked(sharedPreferences.getBoolean("news-desk-fashion",false));
+        mCbSports.setChecked(sharedPreferences.getBoolean("news-desk-sports",false));
+
+        setSpinnerToValue(sharedPreferences.getString("sort-order","Newest"));
+        System.out.println("sort order fetched from shared preferences"+sharedPreferences.getString("sort-order","default"));
+    }
+
+    public void setSpinnerToValue(String value) {
+        int index = 0;
+        SpinnerAdapter adapter = mSortOrder.getAdapter();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i).equals(value)) {
+                index = i;
+                break; // terminate loop
+            }
+        }
+        mSortOrder.setSelection(index);
     }
 
     public void saveFilterOptions(View view){
         Intent filtersData = new Intent();
-        System.out.println("date selected"+mEtDatePicker.getText());
-        filtersData.putExtra("start_date",mEtDatePicker.getText().toString());
+        System.out.println("date selected "+mEtDatePicker.getText());
+        System.out.println("sort order selected "+mSortOrderSelected);
+        System.out.println("arts "+mArtsFilter);
+        System.out.println("fashion "+mFashionFilter);
+        System.out.println("sports "+mSportsFilter);
+
+        filtersData.putExtra("begin-date",mEtDatePicker.getText().toString());
         filtersData.putExtra("arts",mArtsFilter);
         filtersData.putExtra("fashion",mFashionFilter);
         filtersData.putExtra("sports",mSportsFilter);
+        filtersData.putExtra("sort-order",mSortOrderSelected);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        ///data/data/com.package.name/shared_prefs/com.package.name_preferences.xml.
+
+        editor.putString("begin-date",mEtDatePicker.getText().toString());
+        editor.putString("sort-order",mSortOrderSelected);
+        editor.putBoolean("news-desk-arts",mArtsFilter);
+        editor.putBoolean("news-desk-fashion",mFashionFilter);
+        editor.putBoolean("news-desk-sports",mSportsFilter);
+
+        System.out.println("sort order saved to preferences "+mSortOrderSelected);
+        editor.apply();
         setResult(RESULT_OK,filtersData);
-        System.out.println("sending data:- date"+filtersData.getStringExtra("start_date")+
+        System.out.println("sending data:- date"+filtersData.getStringExtra("begin-date")+
                 ", arts: "+filtersData.getBooleanExtra("arts",false)
                 );
         finish();

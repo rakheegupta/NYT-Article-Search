@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -35,6 +37,8 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE = 0;
+    private final String mUrl ="https://api.nytimes.com/svc/search/v2/articlesearch.json";
+    private final String mApi_key="N9I7wpmmT8BPcPrnMhnohhn0KDkJjFQD";
     ArrayList<Article> mAlArticles;
     Handler mHandler;
     RecycledArticleAdapter mRecycledArticleListAdapter;
@@ -52,12 +56,41 @@ public class MainActivity extends AppCompatActivity {
 
         searchNYT("business");
 
+        ItemClickSupport.addTo(rvItems).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                Intent i = new Intent (getBaseContext(),FullPageArticle.class);
+                i.putExtra("url",mAlArticles.get(position).getmWebUrl());
+                startActivity(i);
+            }
+        });
     }
 
     public void searchNYT(String query)
     {
         OkHttpClient client = new OkHttpClient();
-        String url = String.format("https://api.nytimes.com/svc/search/v2/articlesearch.json?q=%s&api-key=N9I7wpmmT8BPcPrnMhnohhn0KDkJjFQD",query);
+
+        //q=business&fq=news_desk:("sports"%20"arts"%20"fashion")&api-key=
+        //q=obama&facet_fields=source&facet=true&begin_date=20120101&end_date=20121231
+
+        /*https://api.nytimes.com/svc/search/v2/articlesearch.json?
+        q=new+york+times&page=2&sort=oldest&api-key=your-api-key
+
+        https://api.nytimes.com/svc/search/v2/articlesearch.json?
+        fq=romney&facet_field=day_of_week&facet=true&begin_date=20120101&end_date=20120101
+        &api-key=your-api-key
+
+        https://api.nytimes.com/svc/search/v2
+
+        sort newest, oldest, relevance
+         */
+        //String url = mUrl+"&api_key="+mApi_key+"&q="+query;
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(mUrl).newBuilder();
+        urlBuilder.addQueryParameter("api-key", mApi_key);
+        urlBuilder.addQueryParameter("q", query);
+        String url = urlBuilder.build().toString();
+
         Request request = new Request.Builder()
                 .url(url)
                 //http://publicobject.com/helloworld.txt")
@@ -99,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -131,9 +165,17 @@ public class MainActivity extends AppCompatActivity {
                                      int resultCode,
                                      Intent data) {
         if(resultCode==RESULT_OK && requestCode ==REQUEST_CODE){
-            String name = data.getExtras().getString("start_date");
+            String name = data.getExtras().getString("begin-date");
             System.out.println("Result from filter options"+name);
+
 //            Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+            data.getStringExtra("begin-date");
+            data.getBooleanExtra("arts",false);
+            data.getBooleanExtra("fashion",false);
+            data.getBooleanExtra("sports",false);
+            data.getStringExtra("sort-order");
+
+
         }
         super.onActivityResult(requestCode, resultCode, data);
 

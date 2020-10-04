@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="sortorder_array">
-        <item>Date: New to Old</item>
-        <item>Date: Old to New</item>
+        <item>Newest</item>
+        <item>Oldest</item>
+        <item>Relevance</item>
     </string-array>
 </resources>
